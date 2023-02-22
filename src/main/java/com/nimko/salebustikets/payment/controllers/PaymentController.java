@@ -38,7 +38,8 @@ public class PaymentController {
   @PostMapping
   @Operation(summary = "Create new payment",
       description = "Создания оплаты на вход принимает фио клиента + сумма, "
-          + "на выходе возвращает уникальный идентификатор платежа.")
+          + "на выходе возвращает уникальный идентификатор платежа.  "
+          + "Передаем данные в body запроса в виде json: {\"fullName\": \"....\", \"sum\": ....}")
   public ResponseEntity<String> createPayment(@RequestBody PaymentDto payment){
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -48,7 +49,8 @@ public class PaymentController {
   @GetMapping
   @Operation(summary = "Get payment status",
       description = "Получения статусов на вход принимает уникальный идентификатор платежа,"
-          + " на выходе случайным образом отдает 1 из статусов NEW/FAILED/DONE")
+          + " на выходе случайным образом отдает 1 из статусов NEW/FAILED/DONE.  "
+          + "Id передаем как RequestParam запрос: 'http:/.....?id=...'")
   public ResponseEntity<String> getPayment(@RequestParam("id") String id){
     return ResponseEntity.ok(paymentService.getPaymentStatus(id).name());
   }
