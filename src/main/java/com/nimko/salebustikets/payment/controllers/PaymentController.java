@@ -50,7 +50,7 @@ public class PaymentController {
   @Operation(summary = "Get payment status",
       description = "Получения статусов на вход принимает уникальный идентификатор платежа,"
           + " на выходе случайным образом отдает 1 из статусов NEW/FAILED/DONE.  "
-          + "Id передаем как RequestParam запрос: 'http:/.....?id=...'")
+          + "Id передаем как RequestParam запрос: 'http:/...../payments?id=...'")
   public ResponseEntity<String> getPayment(@RequestParam("id") String id){
     return ResponseEntity.ok(paymentService.getPaymentStatus(id).name());
   }

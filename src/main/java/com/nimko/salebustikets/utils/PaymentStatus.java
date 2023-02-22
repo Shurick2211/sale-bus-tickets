@@ -1,4 +1,4 @@
-package com.nimko.salebustikets.payment.utils;
+package com.nimko.salebustikets.utils;
 
 public enum PaymentStatus {
   NEW, FAILED, DONE;

@@ -3,7 +3,7 @@ package com.nimko.salebustikets.payment.services;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.nimko.salebustikets.payment.dto.PaymentDto;
-import com.nimko.salebustikets.payment.utils.PaymentStatus;
+import com.nimko.salebustikets.utils.PaymentStatus;
 import org.junit.jupiter.api.Test;
 
 class PaymentServiceTest {
