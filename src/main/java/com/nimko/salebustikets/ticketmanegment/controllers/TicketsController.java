@@ -1,16 +1,17 @@
 package com.nimko.salebustikets.ticketmanegment.controllers;
 
 import com.nimko.salebustikets.ticketmanegment.dto.TicketDto;
+import com.nimko.salebustikets.ticketmanegment.dto.TicketInfoDto;
 import com.nimko.salebustikets.ticketmanegment.services.TicketsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,12 +35,12 @@ public class TicketsController {
         .body(ticketsService.buyTicket(dto));
   }
 
-  @GetMapping
+  @GetMapping("/{id}")
   @Operation(summary = "Get payment status",
       description = "Получения информации по билету. На вход: id билета, "
           + "на выходе Информация о рейсе и статус платежа"
-          + "Id передаем как RequestParam запрос: 'http:/...../tickets?id=...'")
-  public ResponseEntity<?> getTicketInfo(@RequestParam("id") Integer ticketId) {
+          + "Id передаем как PathVariable запрос: 'http:/...../{id}'")
+  public ResponseEntity<TicketInfoDto> getTicketInfo(@PathVariable("id") Integer ticketId) {
     return ResponseEntity.ok(ticketsService.getInfoTicket(ticketId));
   }
 

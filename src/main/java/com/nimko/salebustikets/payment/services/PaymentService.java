@@ -15,8 +15,7 @@ public class PaymentService {
   public String createPayment(PaymentDto payment){
     String id = Base64.getEncoder().encodeToString(
         (LocalTime.now().getNano() + "{|}" + payment.getFullName()
-            + "{|}" + payment.getSum())
-            .replaceAll(" ", "").getBytes());
+            + "{|}" + payment.getSum()).getBytes());
     log.info("Create with id: {}", id);
     return id;
   }
