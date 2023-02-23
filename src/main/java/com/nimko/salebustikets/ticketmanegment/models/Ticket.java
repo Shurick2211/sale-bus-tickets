@@ -29,6 +29,7 @@ public class Ticket {
   @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "id")
   private Flight flight;
+  private String paymentId;
 
   private PaymentStatus paymentStatus;
 

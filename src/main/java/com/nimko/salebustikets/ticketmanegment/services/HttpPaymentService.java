@@ -25,7 +25,7 @@ public class HttpPaymentService {
 
   static final String PAYMENT_ENDPOINT = "/payments";
 
-  public PaymentStatus getFromHttpGetPayment(String paymentId){
+  public PaymentStatus getPaymentStatus(String paymentId){
     PaymentStatus status = null;
     try {
       HttpRequest request = HttpRequest.newBuilder()
@@ -39,7 +39,7 @@ public class HttpPaymentService {
     return status;
   }
 
-  public String getFromHttpPostPayment(Ticket ticket) {
+  public String createPayment(Ticket ticket) {
     log.info("Ticket {}",ticket);
     String paymentId = "";
     ObjectMapper dtoMapper = new ObjectMapper();

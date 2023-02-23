@@ -10,8 +10,13 @@ import com.nimko.salebustikets.utils.FlightNoExistException;
 import com.nimko.salebustikets.utils.OnTheFlightNoSeatsException;
 import com.nimko.salebustikets.utils.PaymentStatus;
 import com.nimko.salebustikets.utils.TicketNoExistException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,10 +52,10 @@ public class TicketsService {
     }
     ticket.setFlight(flight);
     ticket = ticketsRepository.save(ticket);
-    String paymentId = httpPaymentService.getFromHttpPostPayment(ticket);
-    PaymentStatus status = httpPaymentService.getFromHttpGetPayment(paymentId);
-    log.info("Ticket paymentId: {}; status {}",paymentId, status.name());
-    ticket.setPaymentStatus(status);
+    String paymentId = httpPaymentService.createPayment(ticket);
+    ticket.setPaymentId(paymentId);
+    log.info("Ticket paymentId: {}",paymentId);
+    ticket.setPaymentStatus(PaymentStatus.NEW);
     log.info("Ticket {}, Flight: {}",ticket, flightsRepository.findById(ticket.getFlight().getId()));
     return ticketsRepository.save(ticket).getTicketId();
   }
@@ -59,6 +64,33 @@ public class TicketsService {
     Ticket ticket = ticketsRepository.findById(ticketId).orElseThrow(TicketNoExistException::new);
     log.info("Ticket - {}", ticket);
     return new TicketInfoDto(ticket.getFlight(),ticket.getPaymentStatus());
+  }
+
+
+  @Scheduled(fixedDelayString =  "${check.status.delay}")
+  @Transactional
+  public void checkNew(){
+    List<Ticket> newTicket = ticketsRepository.findAllTicketsByPaymentStatus(PaymentStatus.NEW);
+    if (newTicket.isEmpty()) {
+      log.info("List is empty");
+      return;
+    }
+    log.info("Start List size {}" , newTicket.size());
+    newTicket.stream().forEach(ticket -> {
+      ticket.setPaymentStatus(httpPaymentService.getPaymentStatus(ticket.getPaymentId()));
+      ticketsRepository.save(ticket);
+    });
+    newTicket.stream()
+        .filter(ticket -> ticket.getPaymentStatus() == PaymentStatus.FAILED)
+        .forEach(ticket -> {
+          Flight flight = ticket.getFlight();
+          log.info("Seat RETURNED");
+          int num = flight.getNumOfTickets();
+          num++;
+          flight.setNumOfTickets(num);
+          flightsRepository.save(flight);
+          log.info("Seats of flight {} END", flight.getNumOfTickets());
+        });
   }
 
 
