@@ -7,18 +7,15 @@ import com.nimko.salebustikets.utils.FlightNoExistException;
 import com.nimko.salebustikets.utils.OnTheFlightNoSeatsException;
 import com.nimko.salebustikets.utils.TicketNoExistException;
 import io.swagger.v3.oas.annotations.Operation;
-import jdk.jfr.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,12 +42,12 @@ public class TicketsController {
         .body(ticketsService.buyTicket(dto));
   }
 
-  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping("/{id}")
   @Operation(summary = "Get payment status",
       description = "Получения информации по билету. На вход: id билета, "
           + "на выходе Информация о рейсе и статус платежа"
-          + "Id передаем как PathVariable запрос: 'http:/...../tickets?id=...'")
-  public ResponseEntity<TicketInfoDto> getTicketInfo(@RequestParam("id") Integer id)
+          + "Id передаем как PathVariable запрос: 'http:/...../tickets/{id}'")
+  public ResponseEntity<TicketInfoDto> getTicketInfo(@PathVariable Integer id)
       throws TicketNoExistException {
     log.info("Ticket id = {}", id);
     return ResponseEntity.ok(ticketsService.getInfoTicket(id));

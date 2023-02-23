@@ -3,7 +3,6 @@ package com.nimko.salebustikets.payment.services;
 import com.nimko.salebustikets.payment.dto.PaymentDto;
 import com.nimko.salebustikets.utils.PaymentStatus;
 import java.time.LocalTime;
-import java.util.Base64;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
