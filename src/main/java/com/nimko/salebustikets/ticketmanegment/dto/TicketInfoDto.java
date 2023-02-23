@@ -13,6 +13,6 @@ import lombok.ToString;
 @Schema(name = "Схема информации про ticket", description = "DTO для фронтенда!")
 public class TicketInfoDto {
   private Flight flight;
-  private PaymentStatus paymentStatus;
+  private PaymentStatus status;
 
 }

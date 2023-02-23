@@ -10,35 +10,25 @@ import com.nimko.salebustikets.utils.FlightNoExistException;
 import com.nimko.salebustikets.utils.OnTheFlightNoSeatsException;
 import com.nimko.salebustikets.utils.PaymentStatus;
 import com.nimko.salebustikets.utils.TicketNoExistException;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 public class TicketsService {
-  @Value("${my.env.path}")
-  private String path;
-
-  static final String PAYMENT_ENDPOINT = "/payments";
 
   private final TicketsRepository ticketsRepository;
   private final FlightsRepository flightsRepository;
+  private final HttpPaymentService httpPaymentService;
 
   @Autowired
-  public TicketsService(TicketsRepository ticketsRepository, FlightsRepository flightsRepository) {
+  public TicketsService(TicketsRepository ticketsRepository, FlightsRepository flightsRepository,
+      HttpPaymentService httpPaymentService) {
     this.ticketsRepository = ticketsRepository;
     this.flightsRepository = flightsRepository;
+    this.httpPaymentService = httpPaymentService;
   }
 
   @Transactional
@@ -49,7 +39,7 @@ public class TicketsService {
         .orElseThrow(FlightNoExistException::new);
     int ticketNum = flight.getNumOfTickets();
     if (ticketNum > 0) {
-      ticketNum -= 1;
+      ticketNum--;
       flight.setNumOfTickets(ticketNum);
       flightsRepository.save(flight);
     } else {
@@ -57,8 +47,8 @@ public class TicketsService {
     }
     ticket.setFlight(flight);
     ticket = ticketsRepository.save(ticket);
-    String paymentId = getFromHttpPostPayment(ticket);
-    PaymentStatus status = getFromHttpGetPayment(paymentId);
+    String paymentId = httpPaymentService.getFromHttpPostPayment(ticket);
+    PaymentStatus status = httpPaymentService.getFromHttpGetPayment(paymentId);
     log.info("Ticket paymentId: {}; status {}",paymentId, status.name());
     ticket.setPaymentStatus(status);
     log.info("Ticket {}, Flight: {}",ticket, flightsRepository.findById(ticket.getFlight().getId()));
@@ -68,58 +58,8 @@ public class TicketsService {
   public TicketInfoDto getInfoTicket(Integer ticketId) throws TicketNoExistException {
     Ticket ticket = ticketsRepository.findById(ticketId).orElseThrow(TicketNoExistException::new);
     log.info("Ticket - {}", ticket);
-    TicketInfoDto dto = new TicketInfoDto(ticket.getFlight(),ticket.getPaymentStatus());
-    return dto;
+    return new TicketInfoDto(ticket.getFlight(),ticket.getPaymentStatus());
   }
 
 
-
-
-  private PaymentStatus getFromHttpGetPayment(String paymentId){
-    PaymentStatus status = null;
-    try {
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(new URI(path + PAYMENT_ENDPOINT + "?id=" +paymentId))
-          .GET()
-          .build();
-      status = PaymentStatus.valueOf(getResponse(request));
-    } catch (URISyntaxException e) {
-      log.error("URI problems {}", e.getMessage());
-    }
-    return status;
-  }
-
-  private String getFromHttpPostPayment(Ticket ticket) {
-    log.info("Ticket {}",ticket);
-    String paymentId = "";
-    try {
-      HttpRequest request = HttpRequest.newBuilder()
-          .uri(new URI(path + PAYMENT_ENDPOINT))
-          .header("Content-Type", "application/json")
-          .POST(BodyPublishers.ofString("{\"fullName\": \""
-              + ticket.getFullName() + "\", \"sum\": "
-              + ticket.getFlight().getPrice() + "}"))
-          .build();
-      paymentId = getResponse(request);
-    } catch (URISyntaxException e) {
-      log.error("URI problems {}", e.getMessage());
-    }
-    return paymentId;
-  }
-
-  private String getResponse(HttpRequest request){
-    HttpResponse<String> response = null;
-    try {
-      response = HttpClient
-          .newBuilder()
-          .build()
-          .send(request, BodyHandlers.ofString());
-    } catch (IOException e) {
-      log.error("IOException: {}", e.getMessage());
-    } catch (InterruptedException e) {
-      log.error("Interrupted: {}", e.getMessage());
-    }
-    log.info("Response: {}", response);
-    return response.body();
-  }
 }

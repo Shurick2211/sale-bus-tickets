@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class PaymentService {
 
   public String createPayment(PaymentDto payment){
-    String id =  String.valueOf(LocalTime.now().getNano() + payment.getFullName().length());
+    String id =  String.valueOf(LocalTime.now().getNano() * payment.getFullName().hashCode());
     log.info("Create with id: {}", id);
     return id;
   }
