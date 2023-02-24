@@ -10,15 +10,13 @@ import com.nimko.salebustikets.utils.FlightNoExistException;
 import com.nimko.salebustikets.utils.OnTheFlightNoSeatsException;
 import com.nimko.salebustikets.utils.PaymentStatus;
 import com.nimko.salebustikets.utils.TicketNoExistException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Slf4j
