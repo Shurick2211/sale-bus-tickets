@@ -2,6 +2,7 @@ package com.nimko.salebustikets.payment.controllers;
 
 import com.nimko.salebustikets.payment.dto.PaymentDto;
 import com.nimko.salebustikets.payment.services.PaymentService;
+import com.nimko.salebustikets.utils.PaymentNoExistException;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -40,7 +41,7 @@ public class PaymentController {
       description = "Создания оплаты на вход принимает фио клиента + сумма, "
           + "на выходе возвращает уникальный идентификатор платежа.  "
           + "Передаем данные в body запроса в виде json: {\"fullName\": \"....\", \"sum\": ....}")
-  public ResponseEntity<String> createPayment(@RequestBody PaymentDto payment){
+  public ResponseEntity<?> createPayment(@RequestBody PaymentDto payment){
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(paymentService.createPayment(payment));
@@ -51,7 +52,7 @@ public class PaymentController {
       description = "Получения статусов на вход принимает уникальный идентификатор платежа,"
           + " на выходе случайным образом отдает 1 из статусов NEW/FAILED/DONE.  "
           + "Id передаем как RequestParam запрос: 'http:/...../payments?id=...'")
-  public ResponseEntity<String> getPayment(@RequestParam("id") String id){
+  public ResponseEntity<String> getPayment(@RequestParam("id") Long id) throws PaymentNoExistException {
     return ResponseEntity.ok(paymentService.getPaymentStatus(id).name());
   }
 

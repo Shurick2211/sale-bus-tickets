@@ -54,7 +54,7 @@ public class TicketsService {
     ticket.setPaymentId(paymentId);
     log.info("Ticket paymentId: {}",paymentId);
     ticket.setPaymentStatus(PaymentStatus.NEW);
-    log.info("Ticket {}, Flight: {}",ticket, flightsRepository.findById(ticket.getFlight().getId()));
+    log.info("Ticket {}, for check Flight: {}",ticket, flightsRepository.findById(ticket.getFlight().getId()));
     return ticketsRepository.save(ticket).getTicketId();
   }
 
@@ -70,10 +70,10 @@ public class TicketsService {
   public void checkNew(){
     List<Ticket> newTicket = ticketsRepository.findAllTicketsByPaymentStatus(PaymentStatus.NEW);
     if (newTicket.isEmpty()) {
-      log.info("List is empty");
+      log.info("List new tickets is empty");
       return;
     }
-    log.info("Start List size {}" , newTicket.size());
+    log.info("List new tickets size {}" , newTicket.size());
     newTicket.forEach(ticket -> {
       ticket.setPaymentStatus(httpPaymentService.getPaymentStatus(ticket.getPaymentId()));
       ticketsRepository.save(ticket);
@@ -82,12 +82,12 @@ public class TicketsService {
         .filter(ticket -> ticket.getPaymentStatus() == PaymentStatus.FAILED)
         .forEach(ticket -> {
           Flight flight = ticket.getFlight();
-          log.info("Seat RETURNED");
+          log.info("Seat RETURNED for ticket id: {}", ticket.getTicketId());
           int num = flight.getNumOfTickets();
           num++;
           flight.setNumOfTickets(num);
           flightsRepository.save(flight);
-          log.info("Seats of flight {} END", flight.getNumOfTickets());
+          log.info("Seats of flight {} for sale", flight.getNumOfTickets());
         });
   }
 }
