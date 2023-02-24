@@ -8,7 +8,6 @@ import com.nimko.salebustikets.ticketmanegment.repo.TicketsRepository;
 import com.nimko.salebustikets.utils.FlightNoExistException;
 import com.nimko.salebustikets.utils.OnTheFlightNoSeatsException;
 import com.nimko.salebustikets.utils.PaymentStatus;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@Slf4j
+
 class TicketsServiceTest {
 
     TicketsRepository ticketsRepository = Mockito.mock(TicketsRepository.class);
@@ -41,7 +40,7 @@ class TicketsServiceTest {
     void setUp() {
         ticketsService = new TicketsService(ticketsRepository,flightsRepository, httpPaymentService);
         flight = new Flight("1A","Kharkiv","Kiev",
-                LocalDateTime.of(2023,03, 1,10,00),
+                LocalDateTime.of(2023,3, 1,10,0),
                 500, SEATS);
         newTicket = List.of(
             new Ticket(1,"I V N", flight, "123", PaymentStatus.NEW),

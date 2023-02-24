@@ -90,6 +90,4 @@ public class TicketsService {
           log.info("Seats of flight {} END", flight.getNumOfTickets());
         });
   }
-
-
 }
