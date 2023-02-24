@@ -76,7 +76,7 @@ public class TicketsService {
       return;
     }
     log.info("Start List size {}" , newTicket.size());
-    newTicket.stream().forEach(ticket -> {
+    newTicket.forEach(ticket -> {
       ticket.setPaymentStatus(httpPaymentService.getPaymentStatus(ticket.getPaymentId()));
       ticketsRepository.save(ticket);
     });
