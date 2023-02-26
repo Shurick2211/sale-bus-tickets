@@ -32,6 +32,7 @@ public class TicketsController {
   @PostMapping
   @Operation(summary = "Buy new Ticket",
       description = "Покупка билета. На вход: ФИО/ идентификатор рейса. "
+          + "В базе есть три рейса с id: \"1A\", \"2F\", \"3C\""
           + "На выходе: идентификатор билета. "
           + "Передаем данные в body запроса в виде json: "
           + "{\"fullName\": \"....\", \"flightId\": \"....\"}")
